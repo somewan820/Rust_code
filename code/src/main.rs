@@ -7,11 +7,11 @@ struct Stack<T, const N: usize> {
 impl<T: Default, const N: usize> Stack<T, N> {
     fn new() -> Self {
         Stack {
-            data: [T::default(); N],
+            data: std::array::from_fn(|_i| T::default()),
             top: 0,
         }
     }
-    fn push(&mut self, item: i32) -> Result<(), &'static str>{
+    fn push(&mut self, item: T) -> Result<(), &'static str>{
         if self.top == N {
             return Err("Stack is full");
         }
@@ -19,16 +19,18 @@ impl<T: Default, const N: usize> Stack<T, N> {
         self.top += 1;
         Ok(())
     }
-    fn pop(&mut self) -> Result<i32, &'static str> {
+    fn pop(&mut self) -> Result<T, &'static str> {
         if self.top == 0 {
             return Err("Stack is empty");
         }
         self.top -= 1;
-        Ok(self.data[self.top])
+        let mut k = T::default();
+        std::mem::swap(&mut k, &mut self.data[self.top]);
+        Ok(k)
     }
 }
 fn main() {
-    let mut stack = Stack::<10>::new();
+    let mut stack = Stack::<i32, 10>::new();
     for i in 0..10 {
         stack.push(i);
     }
